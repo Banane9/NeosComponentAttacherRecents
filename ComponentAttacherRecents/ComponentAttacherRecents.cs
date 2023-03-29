@@ -33,7 +33,7 @@ namespace ComponentAttacherRecents
         public override string Author => "Banane9";
         public override string Link => "https://github.com/Banane9/NeosComponentAttacherRecents";
         public override string Name => "ComponentAttacherRecents";
-        public override string Version => "1.0.0";
+        public override string Version => "1.1.0";
 
         private static List<string> Recents => Config.GetValue(RecentComponents);
 
@@ -58,7 +58,15 @@ namespace ComponentAttacherRecents
             harmony.PatchAll();
 
             Config.OnThisConfigurationChanged += Config_OnThisConfigurationChanged;
-            Engine.Current.OnReady += () => RecentsCategory = WorkerInitializer.ComponentLibrary.GetSubcategory(RecentsPath);
+
+            Engine.Current.OnReady += () =>
+            {
+                RecentsCategory = WorkerInitializer.ComponentLibrary.GetSubcategory(RecentsPath);
+
+                if (ModLoader.Mods().FirstOrDefault(mod => mod.Name == "ComponentAttacherSearch") is NeosModBase searchMod
+                 && (searchMod.GetConfiguration()?.TryGetValue(new ModConfigurationKey<HashSet<string>>("ExcludedCategories"), out var excludedCategories) ?? false))
+                    excludedCategories.Add(RecentsPath);
+            };
         }
 
         private static void TrimRecentComponents()
@@ -98,7 +106,7 @@ namespace ComponentAttacherRecents
                 }
             }
 
-            private static void addRecentComponent(Type type)
+            private static void AddRecentComponent(Type type)
             {
                 if (!Recents.Remove(type.FullName))
                     RecentsCategory.AddElement(type);
@@ -126,10 +134,10 @@ namespace ComponentAttacherRecents
                     return;
 
                 if (!type.IsGenericType || Config.GetValue(TrackConcreteComponents))
-                    addRecentComponent(type);
+                    AddRecentComponent(type);
 
                 if (type.IsGenericType && Config.GetValue(TrackGenericComponents))
-                    addRecentComponent(type.GetGenericTypeDefinition());
+                    AddRecentComponent(type.GetGenericTypeDefinition());
 
                 TrimRecentComponents();
             }
