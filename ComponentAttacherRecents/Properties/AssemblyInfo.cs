@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ComponentAttacherRecents")]
-[assembly: AssemblyDescription("Adds the ability to save favorite components and categories.")]
+[assembly: AssemblyDescription("Keeps track of recently used components in a special category.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Banane9")]
 [assembly: AssemblyProduct("ComponentAttacherRecents")]
